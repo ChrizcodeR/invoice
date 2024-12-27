@@ -15,39 +15,19 @@ const Form = ({ onFileLoaded }) => {
         const wb = xlsx.read(event.target.result, { type: 'binary' });
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+        console.log("ESTOS SON LOS DATOS", data);
 
-        const [
-          NIT,
-          EMPRESA,
-          PREFIJO,
-          COMPROBANTE,
-          CLIENTE,
-          NIT_CC,
-          CUFE,
-          DIAN,
-          FECHA_EMISION,
-          FECHA_VALIDACION,
-          MAIL,
-          FECHA_ENVIO,
-          ASUNTO
-        ] = data[0];
+        // Organizar los datos en un formato adecuado
+        const headers = data[0];
+        const rows = data.slice(1);
 
-        const fileData = {
-          NIT,
-          EMPRESA,
-          PREFIJO,
-          COMPROBANTE,
-          CLIENTE,
-          NIT_CC,
-          CUFE,
-          DIAN,
-          FECHA_EMISION,
-          FECHA_VALIDACION,
-          MAIL,
-          FECHA_ENVIO,
-          ASUNTO,
-          // Asegúrate de definir la función generatePDF si es necesaria
-        };
+        const fileData = rows.map((row) => {
+          let rowData = {};
+          headers.forEach((header, index) => {
+            rowData[header] = row[index];
+          });
+          return rowData;
+        });
 
         onFileLoaded(fileData); // Llama la función para enviar los datos al componente padre
       };
