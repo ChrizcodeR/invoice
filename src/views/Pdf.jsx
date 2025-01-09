@@ -265,7 +265,7 @@ const Pdf = ({ data }) => {
               marginBottom: 50,
             },
             cufe: {
-              fontSize: 8,
+              fontSize: 7,
               italics: true,
             },
 
