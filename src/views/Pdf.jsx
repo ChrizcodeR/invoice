@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { imageToBase64 } from "../tools/imagenconverter";
 
 const Pdf = ({ data }) => {
-  // Convertir la imagen a base64.
+  //  Convertir la imagen a base64.
+
   const [base64Image, setBase64Image] = useState("");
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const Pdf = ({ data }) => {
 
   const generatePDF = (data) => {
     if (Array.isArray(data) && data.length > 0) {
-      data.forEach((item, index) => {
+      const createPDF = (item, index) => {
         const {
           NIT = "",
           EMPRESA = "",
@@ -38,7 +39,9 @@ const Pdf = ({ data }) => {
           "FECHA DE ENVIO": FECHA_ENVIO_RAW = "",
           ASUNTO = "",
         } = item;
-
+        // = data[0]; // Accedemos al primer objeto del array
+        console.log("Antes de pasar", data);
+        console.log("imagen antes de montar", base64Image);
         const excelDateToJSDate = (serial) => {
           const excelEpoch = new Date(1900, 0, 1);
           const daysOffset = serial - 2; // Ajustamos -2
@@ -53,8 +56,9 @@ const Pdf = ({ data }) => {
         const FECHA_VALIDACION = FECHA_VALIDACION_RAW
           ? excelDateToJSDate(FECHA_VALIDACION_RAW).toLocaleDateString()
           : "";
+
         const FECHA_ENVIO = FECHA_ENVIO_RAW
-          ? excelDateToJSDate(FECHA_ENVIO_RAW).toLocaleDateString()
+          ? excelDateToJSDate(FECHA_VALIDACION_RAW).toLocaleDateString()
           : "";
 
         const documentDefinition = {
@@ -63,13 +67,6 @@ const Pdf = ({ data }) => {
               image: base64Image, // Llama la imagen convertida a base64.
               width: 100, // Ancho de la imagen
               absolutePosition: { x: 450, y: 10 }, // Posición superior derecha
-              watermark: {
-                text: "test watermark",
-                color: "blue",
-                opacity: 0.3,
-                bold: true,
-                italics: false,
-              },
             },
             { text: "Señores:", style: "header" },
             { text: "A QUIEN INTERESE", style: "subHeader" },
@@ -118,6 +115,7 @@ const Pdf = ({ data }) => {
               },
               style: "table",
             },
+
             {
               text: "* Información del Documento electrónico",
               style: "subHeader",
@@ -232,32 +230,70 @@ const Pdf = ({ data }) => {
             },
             { text: "www.distrifabrica.com", style: "footer" },
           ],
-
           styles: {
-            header: { fontSize: 12, bold: true, margin: [0, 0, 0, 5] },
-            subHeader: { fontSize: 10, margin: [0, 10, 0, 5], bold: true },
+            header: {
+              fontSize: 12,
+              bold: true,
+              margin: [0, 0, 0, 5],
+            },
+            subHeader: {
+              fontSize: 10,
+              margin: [0, 10, 0, 5],
+              bold: true,
+            },
             reference: {
               fontSize: 10,
               italics: true,
               margin: [0, 10, 0, 5],
               bold: true,
             },
-            content: { fontSize: 9, margin: [0, 5, 0, 5] },
-            table: { margin: [0, 10, 0, 10] },
-            footer: { fontSize: 9, italics: true, margin: [0, 10, -10, 5] },
-            footer2: { fontSize: 9, italics: true, marginBottom: 50 },
-            cufe: { fontSize: 8, italics: true },
-            watermark: { opacity: 0.5 },
-            fonts: { fontSize: 9 },
+            content: {
+              fontSize: 9,
+              margin: [0, 5, 0, 5],
+            },
+            table: {
+              margin: [0, 10, 0, 10],
+            },
+            footer: {
+              fontSize: 9,
+              italics: true,
+              margin: [0, 10, -10, 5],
+            },
+            footer2: {
+              fontSize: 9,
+              italics: true,
+              marginBottom: 50,
+            },
+            cufe: {
+              fontSize: 8,
+              italics: true,
+            },
+
+            fonts: {
+              fontSize: 9,
+            },
           },
         };
-
-        pdfMake
-          .createPdf(documentDefinition)
-          .download(
-            `Certificado_Envio_${PREFIJO}${COMPROBANTE}_${index + 1}.pdf`
+        // Generar y descargar el PDF
+        return new Promise((resolve, reject) => {
+          pdfMake.createPdf(documentDefinition).download(
+            `Certificado_Envio_${PREFIJO}${COMPROBANTE}_${index + 1}.pdf`,
+            () => resolve(`PDF ${index + 1} generado exitosamente`),
+            (error) => reject(`Error generando PDF ${index + 1}: ${error}`)
           );
-      });
+        });
+      };
+      // Procesar cada PDF en secuencia
+      (async () => {
+        for (let i = 0; i < data.length; i++) {
+          try {
+            const result = await createPDF(data[i], i);
+            console.log(result);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      })();
     } else {
       console.error("Data is not in the expected format:", data);
     }
