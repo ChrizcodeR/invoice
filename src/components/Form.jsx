@@ -45,7 +45,7 @@ const Form = ({ onFileLoaded }) => {
           </svg>
         </div>
         <div className="text">
-          <span>Click para cargar el archivo</span>
+          <span>Click para cargar la plantilla</span>
         </div>
         <input id="file" type="file" onChange={handleFileUpload} />
       </label>
@@ -70,6 +70,7 @@ const StyledWrapper = styled.div`
     padding: 1.5rem;
     border-radius: 10px;
     box-shadow: 0px 48px 35px -48px #e8e8e8;
+    margin-bottom: 20px;
   }
 
   .custum-file-upload .icon {
