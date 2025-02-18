@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Loader from './components/Animation';
 import Form from './components/Form';
 import Download from './components/download';
+import DownloadT from './components/downloadt';
 import Pdf from './views/Pdf';
 import './App.css';
 
@@ -33,6 +34,7 @@ const App = () => {
       <div className="button">
         <Pdf data={data} />
         <Download/>
+        <DownloadT/>
       </div>
     </>
   );
