@@ -14,8 +14,11 @@ const App = () => {
   };
 
   const handleGeneratePDF = () => {
-    if (data) {
-      data.generatePDF(data); // Llamamos a la función para generar el PDF
+    if (data && data.length > 0) {
+      console.log('Iniciando generación de un solo PDF...');
+      // Llamar a la función generatePDF una vez para generar un solo PDF con todas las filas
+      generatePDF();
+      alert('Proceso de generación de PDF completado.');
     } else {
       alert('Por favor, carga un archivo primero.');
     }

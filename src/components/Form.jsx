@@ -24,12 +24,20 @@ const Form = ({ onFileLoaded }) => {
         const fileData = rows.map((row) => {
           let rowData = {};
           headers.forEach((header, index) => {
-            rowData[header] = row[index];
+            // Asegurarse de que el valor no sea undefined
+            rowData[header] = row[index] || "";
           });
           return rowData;
         });
 
-        onFileLoaded(fileData); // Llama la función para enviar los datos al componente padre
+        // Verificar que hay datos para procesar
+        if (fileData.length === 0) {
+          alert('El archivo Excel está vacío o no contiene datos válidos.');
+          return;
+        }
+
+        console.log("Datos procesados:", fileData);
+        onFileLoaded(fileData);
       };
       reader.readAsBinaryString(file);
     }
